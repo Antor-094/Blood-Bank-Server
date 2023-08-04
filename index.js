@@ -4,6 +4,7 @@ require('dotenv').config()
 const cors = require('cors')
 const port = process.env.PORT || 5000
 const dbConfig = require('./config/dbConfig.js')
+app.use(express.json())
 
   
   app.listen(port, () => {
