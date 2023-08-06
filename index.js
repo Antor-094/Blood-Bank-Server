@@ -1,19 +1,34 @@
-const express = require('express')
-const app = express()
-require('dotenv').config()
+const express = require("express");
+const app = express();
+const port = process.env.PORT || 5000;
 const cors = require('cors')
-const port = process.env.PORT || 5000
-const dbConfig = require('./config/dbConfig.js')
-app.use(express.json())
-app.use(cors())
+require("dotenv").config();
+const dbConfig = require("./config/dbConfig");
+const corsOptions = {
+  origin: '*',
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
+app.use(express.json());
 
-const userRoute = require('./routes/usersRoute.js')
+const usersRoute = require("./routes/usersRoute");
 const inventoryRoute = require("./routes/inventoryRoute");
+const dashboardRoute = require("./routes/dashboardRoute");
 
-  
-app.use('/api/users',userRoute)
+app.use("/api/users", usersRoute);
 app.use("/api/inventory", inventoryRoute);
+app.use("/api/dashboard", dashboardRoute);
 
-  app.listen(port, () => {
-    console.log(`BloodConnect+ is running on port ${port}`)
-  })
+// deployment config
+const path = require("path");
+__dirname = path.resolve();
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/client/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  });
+}
+
+app.listen(port, () => console.log(`Node JS Server Started at ${port}`));
